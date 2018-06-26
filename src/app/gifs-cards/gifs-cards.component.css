@@ -1,0 +1,14 @@
+.card-container {
+    width: 11em;
+    height: 11em;
+}
+
+.card {
+    width: 10em;
+    height: 10em;
+}
+
+.img-card {
+    max-width: 10em;
+    max-height: 10em;
+}
