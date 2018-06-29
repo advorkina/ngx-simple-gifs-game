@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { IGifCard } from './gif-card.interface';
-import { GifsCardsService } from './gifs-cards.service';
+import { Component, OnInit } from "@angular/core";
+import { IGifCard } from "./gif-card.interface";
+import { GifsCardsService } from "./gifs-cards.service";
 
 @Component({
-  selector: 'app-gifs-cards',
-  templateUrl: './gifs-cards.component.html',
-  styleUrls: ['../app.component.css', './gifs-cards.component.css']
+  selector: "app-gifs-cards",
+  templateUrl: "./gifs-cards.component.html",
+  styleUrls: ["../app.component.css", "./gifs-cards.component.css"]
 })
 export class GifsCardsComponent implements OnInit {
-  xNumber = 5;
+  xNumber = 4;
   yNumber = 4;
   numberOfUniqueCards = (this.xNumber + this.yNumber) / 2;
 
@@ -27,22 +27,25 @@ export class GifsCardsComponent implements OnInit {
   }
 
   reset(): void {
-    this.cards = [];
     this.initialize();
   }
 
   private initialize(): void {
+    for (let i = 0; i < this.xNumber; i++) {
+      this.cards[i] = [];
+    }
+
     for (let i = 0; i < this.numberOfUniqueCards; i++) {
-      this.gifUrls[i] = 'https://giphy.com/embed/2A45hAogYCigoqRhZF';
-      // this.gifsCardsService.getGifUrl().subscribe((r: any) => {
-      //   this.gifUrls[i] = r.data.embed_url;
-      // });
+      this.gifsCardsService.getGifUrl().subscribe((r: any) => {
+        this.gifUrls[i] = r.data.embed_url;
+      });
     }
 
     const usedNumbers: { [id: number]: boolean } = {};
+    this.cardCouples = {};
     let gifURLNumber = 0;
     for (let x = 0; x < this.xNumber; x++) {
-      for (let y = 0; y < this.yNumber; y++) {
+      for (let y = 0; y < this.yNumber / 2; y++) {
         const card: IGifCard = {
           isOpen: false,
           url: undefined,
@@ -52,26 +55,26 @@ export class GifsCardsComponent implements OnInit {
           usedNumbers,
           x * this.xNumber + y
         );
+        usedNumbers[nextNumber] = true;
+
         const nextNumberCouple = this.getNextFreeNumber(
           usedNumbers,
           Math.floor(Math.random() * 20)
         );
-
-        usedNumbers[nextNumber] = true;
         usedNumbers[nextNumberCouple] = true;
 
         this.cardCouples[nextNumber] = nextNumberCouple;
         this.cardCouples[nextNumberCouple] = nextNumber;
 
-        this.cards[this.getXCoordinate(nextNumber)][
-          this.getXCoordinate(nextNumber)
-        ] = card;
-        this.cards[this.getXCoordinate(nextNumberCouple)][
-          this.getXCoordinate(nextNumberCouple)
-        ] = card;
-
+        let xC = Math.floor(this.getXCoordinate(nextNumberCouple));
+        let yC = Math.floor(this.getYCoordinate(nextNumberCouple));
+        console.log("number: " + nextNumber + ":" + x + "|" + y);
+        console.log("number: " + nextNumberCouple + ":" + xC + "|" + yC);
+        this.cards[xC][yC] = card;
+        this.cards[x][y] = card;
         gifURLNumber++;
       }
+      console.log(this.cards);
     }
   }
 
@@ -79,7 +82,7 @@ export class GifsCardsComponent implements OnInit {
     usedNumbers: { [id: number]: boolean },
     nextNumber: number
   ): number {
-    while (!usedNumbers[nextNumber]) {
+    while (usedNumbers[nextNumber]) {
       nextNumber++;
     }
 
@@ -91,6 +94,6 @@ export class GifsCardsComponent implements OnInit {
   }
 
   getYCoordinate(cardNumber: number): number {
-    return cardNumber % this.yNumber;
+    return cardNumber % this.xNumber;
   }
 }
