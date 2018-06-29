@@ -1,4 +1,5 @@
 export interface IGifCard {
-    url: string;
-    isOpen: boolean;
+  url: string;
+  gifUrlNumber: number;
+  isOpen: boolean;
 }
