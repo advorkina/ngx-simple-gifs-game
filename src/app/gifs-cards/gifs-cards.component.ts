@@ -10,7 +10,7 @@ import { GifsCardsService } from "./gifs-cards.service";
 export class GifsCardsComponent implements OnInit {
   xNumber = 4;
   yNumber = 4;
-  numberOfUniqueCards = this.xNumber * this.yNumber / 2;
+  numberOfUniqueCards = (this.xNumber * this.yNumber) / 2;
 
   gifUrls = [];
   cards: IGifCard[][] = [];
@@ -36,61 +36,53 @@ export class GifsCardsComponent implements OnInit {
     }
 
     for (let i = 0; i < this.numberOfUniqueCards; i++) {
-      this.gifUrls[i] = i;
-      // this.gifsCardsService.getGifUrl().subscribe((r: any) => {
-      //   this.gifUrls[i] = r.data.embed_url;
-      // });
+      this.gifsCardsService.getGifUrl().subscribe((r: any) => {
+        this.gifUrls[i] = r.data.embed_url;
+      });
     }
 
     const usedNumbers: { [id: number]: boolean } = {};
     this.cardCouples = {};
     let gifURLNumber = 0;
     for (let number = 0; number < this.numberOfUniqueCards; number++) {
-        const card: IGifCard = {
-          isOpen: false,
-          url: undefined,
-          gifUrlNumber: gifURLNumber
-        };
+      const card: IGifCard = {
+        isOpen: false,
+        url: undefined,
+        gifUrlNumber: gifURLNumber
+      };
 
-        const nextNumber = this.getNextFreeNumber(
-          usedNumbers
-        );
-        usedNumbers[nextNumber] = true;
+      const nextNumber = this.getNextFreeNumber(usedNumbers);
+      usedNumbers[nextNumber] = true;
 
-        const nextNumberCouple = this.getNextFreeNumber(
-          usedNumbers
-        );
-        usedNumbers[nextNumberCouple] = true;
+      const nextNumberCouple = this.getNextFreeNumber(usedNumbers);
+      usedNumbers[nextNumberCouple] = true;
 
-        this.cardCouples[nextNumber] = nextNumberCouple;
-        this.cardCouples[nextNumberCouple] = nextNumber;
+      this.cardCouples[nextNumber] = nextNumberCouple;
+      this.cardCouples[nextNumberCouple] = nextNumber;
 
-        let xC = this.getXCoordinate(nextNumberCouple);
-        let yC = this.getYCoordinate(nextNumberCouple);
+      const xC = this.getXCoordinate(nextNumberCouple);
+      const yC = this.getYCoordinate(nextNumberCouple);
 
-        let x: number = this.getXCoordinate(nextNumber);
-        let y: number = this.getYCoordinate(nextNumber);
+      const x: number = this.getXCoordinate(nextNumber);
+      const y: number = this.getYCoordinate(nextNumber);
 
-        this.cards[xC][yC] = card;
-        this.cards[x][y] = card;
-        gifURLNumber++;     
+      this.cards[xC][yC] = card;
+      this.cards[x][y] = card;
+      gifURLNumber++;
     }
     console.log(usedNumbers);
     console.log(this.cards);
   }
 
-  getNextFreeNumber(
-    usedNumbers: { [id: number]: boolean }
-  ): number {
-    let maxNumber: number = this.xNumber * this.yNumber - 1;
+  getNextFreeNumber(usedNumbers: { [id: number]: boolean }): number {
+    const maxNumber: number = this.xNumber * this.yNumber - 1;
     let nextNumber: number = Math.floor(Math.random() * maxNumber);
     while (usedNumbers[nextNumber] && nextNumber < maxNumber) {
       nextNumber++;
     }
 
-    if(nextNumber === maxNumber && usedNumbers[nextNumber])
-    {
-      let nextNumber: 0;
+    if (nextNumber === maxNumber && usedNumbers[nextNumber]) {
+      nextNumber = 0;
       while (usedNumbers[nextNumber] && nextNumber < maxNumber) {
         nextNumber++;
       }

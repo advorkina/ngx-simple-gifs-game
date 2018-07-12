@@ -2,9 +2,8 @@
     <div class="row 50% uniform">
         <div *ngFor="let cardsX of cards">
             <div *ngFor="let cardXY of cardsX" class="card-container">
-                <span *ngIf="cardXY.isOpen" class="img-card">{{gifUrls[cardXY.gifUrlNumber]}}</span>
-                <!-- <iframe *ngIf="cardXY.isOpen" class="img-card" frameborder="0" [src]="gifUrls[cardXY.gifUrlNumber] | safe">
-        </iframe> -->
+                <iframe *ngIf="cardXY.isOpen" class="img-card" frameborder="0" [src]="gifUrls[cardXY.gifUrlNumber] | safe">
+                </iframe>
                 <a *ngIf="!cardXY.isOpen" class="card button" (click)="openCard(cardXY)"></a>
             </div>
         </div>
