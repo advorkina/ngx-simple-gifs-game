@@ -11,6 +11,7 @@ export class GifsCardsComponent implements OnInit {
   xNumber = 4;
   yNumber = 4;
   numberOfUniqueCards = (this.xNumber * this.yNumber) / 2;
+  currentOpenedCards: number[][] = [];
 
   gifUrls = [];
   cards: IGifCard[][] = [];
@@ -22,8 +23,20 @@ export class GifsCardsComponent implements OnInit {
     this.initialize();
   }
 
-  openCard(card: IGifCard): void {
+  openCard(card: IGifCard, x: number, y: number): void {
     card.isOpen = true;
+
+    if (this.currentOpenedCards.length > 1) {
+      this.cards[this.currentOpenedCards[0][0]][
+        this.currentOpenedCards[0][1]
+      ].isOpen = false;
+      this.cards[this.currentOpenedCards[1][0]][
+        this.currentOpenedCards[1][1]
+      ].isOpen = false;
+      this.currentOpenedCards = [];
+    } else {
+      this.currentOpenedCards.unshift([x, y]);
+    }
   }
 
   reset(): void {
@@ -45,12 +58,6 @@ export class GifsCardsComponent implements OnInit {
     this.cardCouples = {};
     let gifURLNumber = 0;
     for (let number = 0; number < this.numberOfUniqueCards; number++) {
-      const card: IGifCard = {
-        isOpen: false,
-        url: undefined,
-        gifUrlNumber: gifURLNumber
-      };
-
       const nextNumber = this.getNextFreeNumber(usedNumbers);
       usedNumbers[nextNumber] = true;
 
@@ -66,8 +73,14 @@ export class GifsCardsComponent implements OnInit {
       const x: number = this.getXCoordinate(nextNumber);
       const y: number = this.getYCoordinate(nextNumber);
 
-      this.cards[xC][yC] = card;
+      const card: IGifCard = {
+        isOpen: false,
+        url: undefined,
+        gifUrlNumber: gifURLNumber
+      };
+
       this.cards[x][y] = card;
+      this.cards[xC][yC] = { ...card };
       gifURLNumber++;
     }
     console.log(usedNumbers);

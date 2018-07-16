@@ -1,10 +1,10 @@
 <div class="box alt">
     <div class="row 50% uniform">
-        <div *ngFor="let cardsX of cards">
-            <div *ngFor="let cardXY of cardsX" class="card-container">
+        <div *ngFor="let cardsX of cards; let y = index">
+            <div *ngFor="let cardXY of cardsX; let x = index" class="card-container">
                 <iframe *ngIf="cardXY.isOpen" class="img-card" frameborder="0" [src]="gifUrls[cardXY.gifUrlNumber] | safe">
                 </iframe>
-                <a *ngIf="!cardXY.isOpen" class="card button" (click)="openCard(cardXY)"></a>
+                <a *ngIf="!cardXY.isOpen" class="card button" (click)="openCard(cardXY, x, y)"></a>
             </div>
         </div>
     </div>
